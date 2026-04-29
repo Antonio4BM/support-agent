@@ -1,0 +1,8 @@
+FROM ollama/ollama:0.20.1-rocm
+
+RUN ollama serve & \
+    sleep 5 && \
+    ollama pull gemma3:1b && \
+    pkill ollama
+
+EXPOSE 11434
