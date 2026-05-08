@@ -1,4 +1,7 @@
+from collections.abc import AsyncIterable
+
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from langchain_ollama import OllamaLLM
 
 app = FastAPI()
@@ -8,6 +11,7 @@ llm = OllamaLLM(
     base_url="http://ollama:11434"
 )
 
-@app.get("/chat")
-def chat(message: str):
-    return {"message": llm.invoke(message)}
+@app.get("/chat", response_class=StreamingResponse)
+def chat(message: str) -> AsyncIterable[str]:
+    for chunk in llm.stream(message):
+        yield chunk
