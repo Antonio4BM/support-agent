@@ -3,26 +3,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.ollama
-    ports:
-      - "11434:11434"
     networks:
-      - chatbot-network
+      - agent-network
     volumes:
       - ollama-data:/root/.ollama
   
-  api:
+  chat-api:
     build:
       context: .
       dockerfile: Dockerfile.api
     ports:
       - "8000:8000"
     networks:
-      - chatbot-network
+      - agent-network
     depends_on:
       - ollama
 
 networks:
-  chatbot-network:
+  agent-network:
     external: true
 volumes:
   ollama-data:
