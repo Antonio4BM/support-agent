@@ -1,3 +1,4 @@
+import re
 from collections.abc import AsyncIterable
 
 from fastapi import FastAPI
@@ -13,5 +14,18 @@ llm = OllamaLLM(
 
 @app.get("/chat", response_class=StreamingResponse)
 def chat(message: str) -> AsyncIterable[str]:
+    buffer = ""
     for chunk in llm.stream(message):
-        yield chunk
+        buffer += chunk
+
+        while True:
+            match = re.search(r"^(.+?[.!?])(\s|$)", buffer, re.DOTALL)
+            if not match:
+                break
+            
+            sentence = match.group(1).strip()
+            buffer = buffer[match.end():]
+            yield sentence
+            
+    if buffer.strip():
+        yield buffer.strip()
