@@ -9,6 +9,11 @@ services:
       - ollama-data:/root/.ollama
   
   chat-api:
+    env_file:
+      - .env
+    environment:
+      - MODEL_NAME=${MODEL_NAME}
+      - MODEL_BASE_URL=${MODEL_BASE_URL}
     build:
       context: .
       dockerfile: Dockerfile.api
